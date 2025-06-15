@@ -1,2 +1,4 @@
 # healthyRPG
-kill missions and improve your actual body´s health 
+RPG real life based-game. Yes, make getting in shape, a funny thing !!!!!!
+We the gamers, need to play all the time, so this game will get you in shape, no doubt!
+kill missions daily and improve your actual body´s health 
