@@ -37,17 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-      'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-
     # Mis apps
     'rest_framework',
     'corsheaders',
-    'game',
+    'rpg',
 ]
 
 MIDDLEWARE = [
@@ -86,12 +79,8 @@ WSGI_APPLICATION = 'legacy_core.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'nombre_de_tu_base_de_datos',  # E.g., 'project_legacy_db'
-        'USER': 'tu_usuario_de_postgres',    # E.g., 'postgres'
-        'PASSWORD': 'tu_contrasena_de_postgres',
-        'HOST': 'localhost',  # O la IP de tu servidor de BD
-        'PORT': '5432',       # Puerto por defecto de Postgres
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
