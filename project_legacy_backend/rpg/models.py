@@ -1,4 +1,3 @@
-
 from django.db import models
 # Ahora importamos todo lo necesario desde legacy_core
 from legacy_core.models import (
@@ -10,11 +9,19 @@ from legacy_core.models import (
 
 # --- Sistema de Misiones (Quests) ---
 
+class QuestType(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+
 class Quest(models.Model):
     """ Plantilla para una misión. """
-    title = models.CharField(max_length=200)
+    name = models.CharField(max_length=200) # Changed from title to name
     description = models.TextField()
     xp_reward = models.PositiveIntegerField(default=10)
+    quest_type = models.ForeignKey(QuestType, on_delete=models.SET_NULL, null=True, blank=True) # Added quest_type
     
     # Las relaciones ahora apuntan a los modelos en legacy_core
     nutritional_archetype_quest = models.ForeignKey(
@@ -34,7 +41,7 @@ class Quest(models.Model):
     is_spiritual_quest = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.title
+        return self.name
 
 class PlayerQuest(models.Model):
     """
@@ -49,7 +56,7 @@ class PlayerQuest(models.Model):
         unique_together = ('player', 'quest', 'date_assigned')
 
     def __str__(self):
-        return f"{self.player.user.username} - {self.quest.title} ({'Completada' if self.is_completed else 'Pendiente'})"
+        return f"{self.player.user.username} - {self.quest.name} ({'Completada' if self.is_completed else 'Pendiente'})"
 
 # --- Sistema de Logros y Recompensas a Largo Plazo ---
 

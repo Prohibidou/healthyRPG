@@ -54,14 +54,8 @@ class DailyQuestsView(APIView):
 
         # 2. Si no hay, crearlas.
         if not player_quests.exists():
-            # Misiones fundamentales de arquetipos
-            nutritional_quests = Quest.objects.filter(nutritional_archetype_quest=player.nutritional_archetype)
-            physical_quests = Quest.objects.filter(physical_archetype_quest=player.physical_archetype)
-            # Misión espiritual diaria
-            spiritual_quest = Quest.objects.filter(is_spiritual_quest=True)
-
-            # Combinar todas las misiones y crear las instancias para el jugador
-            all_quests = list(nutritional_quests) + list(physical_quests) + list(spiritual_quest)
+            # Obtener todas las misiones disponibles
+            all_quests = Quest.objects.all()
             
             new_player_quests = []
             for quest in all_quests:
