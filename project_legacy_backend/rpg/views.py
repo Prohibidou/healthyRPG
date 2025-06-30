@@ -45,11 +45,27 @@ class DailyQuestsView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        player = get_object_or_404(Player, user=request.user)
+        print(f"DEBUG: Request user: {request.user}")
+        try:
+            player = Player.objects.get(user=request.user)
+        except Player.DoesNotExist:
+            print(f"DEBUG: Player profile not found for user: {request.user.username}")
+            return Response({
+                "error": "Player profile not found for this user. Please ensure you are logged in and have a player profile.",
+                "user_searched": request.user.username
+            }, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            traceback.print_exc()
+            return Response({
+                "error": "An unexpected error occurred while fetching daily quests. Check the server console for details.",
+                "details": str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
         today = timezone.now().date()
 
         # 1. Buscar misiones ya asignadas para hoy.
         player_quests = PlayerQuest.objects.filter(player=player, date_assigned=today)
+        print(f"DEBUG: Player quests found: {player_quests.count()}")
 
         # 2. Si no hay, crearlas.
         if not player_quests.exists():

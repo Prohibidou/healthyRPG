@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './Quests.css';
 
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = '';
 
 function Quests() {
     const [quests, setQuests] = useState([]);
@@ -17,7 +17,7 @@ function Quests() {
                 throw new Error('Authentication token not found. Please log in.');
             }
 
-            const response = await fetch(`${API_BASE_URL}/rpg/api/quests/daily/`, {
+            const response = await fetch(`http://localhost:8000/rpg/api/quests/daily/`, {
                 headers: {
                     'Authorization': `Token ${token}`,
                     'Content-Type': 'application/json'
@@ -53,7 +53,7 @@ function Quests() {
                 throw new Error('Authentication token not found. Please log in.');
             }
 
-            const response = await fetch(`${API_BASE_URL}/rpg/api/quests/complete/${playerQuestId}/`, {
+            const response = await fetch(`http://localhost:8000/rpg/api/quests/complete/${playerQuestId}/`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Token ${token}`,
