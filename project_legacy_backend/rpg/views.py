@@ -18,7 +18,6 @@ class PlayerProfileView(APIView):
     """
     Devuelve el perfil completo del jugador autenticado.
     """
-    authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
@@ -93,7 +92,7 @@ class CompleteQuestView(APIView):
         player.add_xp(player_quest.quest.xp_reward)
 
         return Response({
-            "message": f"¡Misión '{player_quest.quest.title}' completada!",
+            "message": f"¡Misión '{player_quest.quest.name}' completada!",
             "xp_gained": player_quest.quest.xp_reward,
             "current_xp": player.xp,
             "current_level": player.level

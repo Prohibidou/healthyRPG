@@ -35,6 +35,7 @@
     padding: 1.5em;
     color: #E0C9A6;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
+    position: relative; /* For completed overlay */
 }
 
 .quest-item h2 {
@@ -51,6 +52,51 @@
 
 .quest-item strong {
     color: #FFC107;
+}
+
+.quest-item button {
+    display: block;
+    width: 100%;
+    padding: 0.8em;
+    margin-top: 1em;
+    background-color: #FFD700; /* Gold button */
+    color: #4E342E; /* Dark brown text */
+    border: none;
+    border-radius: 5px;
+    font-size: 1.2em;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.quest-item button:hover {
+    background-color: #FFC107;
+}
+
+.quest-actions button {
+    background-color: #28a745; /* Green for Done */
+    color: white;
+    margin-right: 0.5em;
+}
+
+.quest-actions button:last-child {
+    background-color: #dc3545; /* Red for Couldn't do it */
+    margin-right: 0;
+}
+
+.quest-actions button:hover {
+    opacity: 0.9;
+}
+
+.quest-item.completed {
+    opacity: 0.7;
+    border-color: #28a745; /* Green border for completed */
+}
+
+.completed-message {
+    color: #28a745;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 1em;
 }
 
 .back-link {

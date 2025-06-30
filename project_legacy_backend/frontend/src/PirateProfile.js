@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './PirateProfile.css';
 
+const API_BASE_URL = 'http://localhost:8000';
+
 function PirateProfile() {
     const [player, setPlayer] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -20,7 +22,7 @@ function PirateProfile() {
                     throw new Error('Authentication token not found. Please log in.');
                 }
 
-                const response = await fetch('/rpg/api/profile/', {
+                const response = await fetch(`${API_BASE_URL}/rpg/api/profile/`, {
                     headers: {
                         'Authorization': `Token ${token}`,
                         'Content-Type': 'application/json'
