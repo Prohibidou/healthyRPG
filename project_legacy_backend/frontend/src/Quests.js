@@ -52,12 +52,12 @@ function Quests() {
                 <p>No quests found. Time to relax on the deck!</p>
             ) : (
                 <div className="quest-list">
-                    {quests.map(quest => (
-                        <div key={quest.id} className="quest-item">
-                            <h2>{quest.name}</h2>
-                            <p>{quest.description}</p>
-                            <p><strong>Type:</strong> {quest.quest_type}</p>
-                            <p><strong>Reward:</strong> {quest.xp_reward} XP</p>
+                    {quests.map(playerQuest => (
+                        <div key={playerQuest.id} className="quest-item">
+                            <h2>{playerQuest.quest.name}</h2>
+                            <p>{playerQuest.quest.description}</p>
+                            <p><strong>Type:</strong> {playerQuest.quest.quest_type.name}</p>
+                            <p><strong>Reward:</strong> {playerQuest.quest.xp_reward} XP</p>
                             {/* Add a button to complete quest later */}
                         </div>
                     ))}
