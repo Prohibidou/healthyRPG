@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Daily Quests</title>
+</head>
+<body>
+    <h1>Daily Quests</h1>
+    <ul>
+        {% for player_quest in player_quests %}
+            <li>
+                <strong>{{ player_quest.quest.title }}</strong> - {{ player_quest.quest.description }}
+                {% if player_quest.is_completed %}
+                    (Completed)
+                {% else %}
+                    <form action="{% url 'rpg:complete-quest-view' player_quest.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit">Complete</button>
+                    </form>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+
+    <a href="{% url 'rpg:profile' %}">View Profile</a>
+</body>
+</html>

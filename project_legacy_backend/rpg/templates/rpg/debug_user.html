@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug User</title>
+    <style>
+        body { font-family: sans-serif; background-color: #fdd; border: 2px solid red; padding: 1em; }
+        code { background-color: #eee; padding: 2px 4px; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <h1>Debug Information</h1>
+    <p>A <code>Player</code> profile could not be found for the currently logged-in user.</p>
+    
+    <h2>User Details:</h2>
+    <ul>
+        <li><strong>Username:</strong> <code>{{ user.username }}</code></li>
+        <li><strong>Is Authenticated:</strong> <code>{{ user.is_authenticated }}</code></li>
+        <li><strong>Is Superuser:</strong> <code>{{ user.is_superuser }}</code></li>
+    </ul>
+
+    <h2>Next Steps:</h2>
+    <p>Please copy all the text on this page and paste it back into the chat so I can resolve the issue.</p>
+</body>
+</html>

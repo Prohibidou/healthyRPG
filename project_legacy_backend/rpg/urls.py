@@ -1,8 +1,24 @@
+
 from django.urls import path
-from .views import CharacterDataView, DailyQuestsView, CompleteQuestView
+from .views import (
+    PlayerProfileView, 
+    DailyQuestsView, 
+    CompleteQuestView,
+    PlayerProfileTemplateView,
+    DailyQuestsTemplateView,
+    CompleteQuestTemplateView
+)
+
+app_name = 'rpg'
 
 urlpatterns = [
-    path('character/',            CharacterDataView.as_view(), name='character-data'),
-    path('quests/daily/',         DailyQuestsView.as_view(),   name='daily-quests'),
-    path('quests/complete/<int:quest_id>/', CompleteQuestView.as_view(), name='complete-quest'),
+    # API Views
+    path('api/profile/', PlayerProfileView.as_view(), name='player-profile-api'),
+    path('api/quests/daily/', DailyQuestsView.as_view(), name='daily-quests-api'),
+    path('api/quests/complete/<int:player_quest_id>/', CompleteQuestView.as_view(), name='complete-quest-api'),
+
+    # Template Views
+    path('profile/', PlayerProfileTemplateView.as_view(), name='profile'),
+    path('quests/', DailyQuestsTemplateView.as_view(), name='quests'),
+    path('quests/complete/<int:player_quest_id>/', CompleteQuestTemplateView.as_view(), name='complete-quest-view'),
 ]

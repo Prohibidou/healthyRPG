@@ -1,17 +1,31 @@
 from rest_framework import serializers
-from .models import Character
+from legacy_core.models import Player, NutritionalArchetype, PhysicalArchetype, SpiritualPath
+from .models import PlayerQuest
 
-class CharacterSerializer(serializers.ModelSerializer):
-    nutritional_archetype_name = serializers.CharField(source='get_nutritional_archetype_display')
-    physical_archetype_name    = serializers.CharField(source='get_physical_archetype_display')
-    spiritual_path_name        = serializers.CharField(source='get_spiritual_path_display')
-
+class NutritionalArchetypeSerializer(serializers.ModelSerializer):
     class Meta:
-        model  = Character
-        fields = [
-            'name', 'level', 'xp',
-            'nutritional_archetype_name',
-            'physical_archetype_name',
-            'spiritual_path_name',
-            'login_streak', 'spiritual_streak'
-        ]
+        model = NutritionalArchetype
+        fields = '__all__'
+
+class PhysicalArchetypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PhysicalArchetype
+        fields = '__all__'
+
+class SpiritualPathSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SpiritualPath
+        fields = '__all__'
+
+class PlayerSerializer(serializers.ModelSerializer):
+    nutritional_archetype = NutritionalArchetypeSerializer(allow_null=True)
+    physical_archetype = PhysicalArchetypeSerializer(allow_null=True)
+    # spiritual_path = SpiritualPathSerializer(allow_null=True)
+    class Meta:
+        model = Player
+        fields = ('level', 'xp', 'nutritional_archetype', 'physical_archetype') #, 'spiritual_path')
+
+class PlayerQuestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PlayerQuest
+        fields = '__all__'

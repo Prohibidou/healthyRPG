@@ -1,0 +1,24 @@
+
+.player-profile-container {
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 20px;
+    max-width: 800px;
+    margin: 20px auto;
+}
+
+.player-stats, .player-archetypes {
+    margin-bottom: 20px;
+}
+
+.archetype {
+    margin-bottom: 15px;
+    padding-left: 15px;
+    border-left: 3px solid #ccc;
+}
+
+.player-profile-error {
+    color: red;
+    font-weight: bold;
+}

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Player Profile</title>
+</head>
+<body>
+    <h1>Player Profile</h1>
+    <p><strong>Username:</strong> {{ player.user.username }}</p>
+    <p><strong>Level:</strong> {{ player.level }}</p>
+    <p><strong>XP:</strong> {{ player.xp }}</p>
+    <p><strong>Nutritional Archetype:</strong> {{ player.nutritional_archetype.name }}</p>
+    <p><strong>Physical Archetype:</strong> {{ player.physical_archetype.name }}</p>
+    <p><strong>Spiritual Path:</strong> {{ player.spiritual_path.name }}</p>
+
+    <a href="{% url 'rpg:quests' %}">View Daily Quests</a>
+</body>
+</html>

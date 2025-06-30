@@ -1,0 +1,55 @@
+/* PirateProfile.css */
+
+@import url('https://fonts.googleapis.com/css2?family=Pirata+One&display=swap');
+
+.profile-container {
+  background-color: #6B4F35; /* Wood brown */
+  border: 10px solid #3E2723; /* Darker wood border */
+  border-radius: 15px;
+  padding: 2em;
+  margin: 2em auto;
+  max-width: 600px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.7), inset 0 0 15px rgba(0,0,0,0.5);
+  color: #E0C9A6; /* Parchment color */
+  font-family: 'Pirata One', cursive;
+  text-shadow: 1px 1px 2px #000;
+}
+
+.profile-container h1 {
+  font-family: 'Pirata One', cursive;
+  font-size: 3em;
+  text-align: center;
+  margin-bottom: 0.5em;
+  color: #FFD700; /* Gold color for title */
+  text-transform: uppercase;
+}
+
+.profile-stats p {
+  font-size: 1.5em;
+  margin: 0.5em 0;
+  border-bottom: 2px solid #8D6E63;
+  padding-bottom: 0.5em;
+}
+
+.profile-stats p strong {
+  color: #FFC107; /* Amber color for labels */
+  margin-right: 1em;
+}
+
+.profile-links a {
+    display: block;
+    text-align: center;
+    margin-top: 2em;
+    padding: 0.8em;
+    background-color: #4E342E; /* Dark brown for button */
+    color: #FFD700;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 1.2em;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.profile-links a:hover {
+    background-color: #FFD700;
+    color: #4E342E;
+}
