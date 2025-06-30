@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import './PirateProfile.css';
 
 function PirateProfile() {
@@ -56,7 +57,7 @@ function PirateProfile() {
 
     return (
         <div className="profile-container">
-            <h1>Captain's Log</h1>
+            <h1>Soldier's Log</h1>
             <div className="profile-stats">
                 <p><strong>Rank:</strong> Level {player.level}</p>
                 <p><strong>Bounty:</strong> {player.xp} XP</p>
@@ -66,7 +67,7 @@ function PirateProfile() {
             </div>
             <div className="profile-links">
                 {/* This link will eventually go to the quests page */}
-                <a href="#">View a Treasure Map (Quests)</a>
+                <Link to="/quests">View a Treasure Map (Quests)</Link>
             </div>
         </div>
     );

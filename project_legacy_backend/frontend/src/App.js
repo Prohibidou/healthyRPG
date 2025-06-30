@@ -1,13 +1,19 @@
-
 import React from 'react';
-import PirateProfile from './PirateProfile'; // Import PirateProfile
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import PirateProfile from './PirateProfile';
+import Quests from './Quests';
 import './App.css';
 
 function App() {
   return (
-    <div className="App">
-      <PirateProfile /> {/* Render PirateProfile */}
-    </div>
+    <Router>
+      <div className="App">
+        <Routes>
+          <Route path="/" element={<PirateProfile />} />
+          <Route path="/quests" element={<Quests />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 

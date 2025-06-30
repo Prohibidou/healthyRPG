@@ -1,0 +1,75 @@
+/* Quests.css */
+
+.quests-container {
+    background-color: #6B4F35; /* Wood brown */
+    border: 10px solid #3E2723; /* Darker wood border */
+    border-radius: 15px;
+    padding: 2em;
+    margin: 2em auto;
+    max-width: 800px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.7), inset 0 0 15px rgba(0,0,0,0.5);
+    color: #E0C9A6; /* Parchment color */
+    font-family: 'Pirata One', cursive;
+    text-shadow: 1px 1px 2px #000;
+}
+
+.quests-container h1 {
+    font-family: 'Pirata One', cursive;
+    font-size: 3em;
+    text-align: center;
+    margin-bottom: 1em;
+    color: #FFD700; /* Gold color for title */
+    text-transform: uppercase;
+}
+
+.quest-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5em;
+}
+
+.quest-item {
+    background-color: #4E342E; /* Dark brown for quest item background */
+    border: 5px solid #3E2723;
+    border-radius: 10px;
+    padding: 1.5em;
+    color: #E0C9A6;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
+}
+
+.quest-item h2 {
+    color: #FFD700;
+    font-size: 1.8em;
+    margin-top: 0;
+    margin-bottom: 0.5em;
+}
+
+.quest-item p {
+    font-size: 1.1em;
+    margin-bottom: 0.5em;
+}
+
+.quest-item strong {
+    color: #FFC107;
+}
+
+.back-link {
+    text-align: center;
+    margin-top: 2em;
+}
+
+.back-link a {
+    display: inline-block;
+    padding: 0.8em 1.5em;
+    background-color: #4E342E;
+    color: #FFD700;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 1.2em;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.back-link a:hover {
+    background-color: #FFD700;
+    color: #4E342E;
+}
