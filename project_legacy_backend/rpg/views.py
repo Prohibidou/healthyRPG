@@ -3,12 +3,15 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.authentication import SessionAuthentication
+from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
+
+class LoginView(TemplateView):
+    template_name = 'rpg/login.html'
 
 from legacy_core.models import Player
 from .models import Quest, PlayerQuest
@@ -18,12 +21,14 @@ class PlayerProfileView(APIView):
     """
     Devuelve el perfil completo del jugador autenticado.
     """
-    authentication_classes = [SessionAuthentication]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
         try:
-            player = Player.objects.get(user=request.user)
+            player, created = Player.objects.get_or_create(user=request.user)
+            if created:
+                print(f"Created new player profile for user: {request.user.username}")
             serializer = PlayerSerializer(player)
             return Response(serializer.data)
         except Player.DoesNotExist:
