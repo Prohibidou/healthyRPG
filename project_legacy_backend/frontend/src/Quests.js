@@ -100,25 +100,34 @@ function Quests() {
         setActiveQuestId(null); // Reset active quest
     };
 
-    if (loading) {
-        return <div className="quests-container"><h1>Loading Quests...</h1></div>;
-    }
+    const groupQuestsByTimeOfDay = (quests) => {
+        const groupedQuests = {
+            Morning: [],
+            Afternoon: [],
+            Night: [],
+        };
 
-    if (error) {
-        return <div className="quests-container"><h1>Error: {error}</h1></div>;
-    }
+        quests.forEach(quest => {
+            const timeOfDay = quest.quest.time_of_day;
+            if (timeOfDay in groupedQuests) {
+                groupedQuests[timeOfDay].push(quest);
+            }
+        });
 
-    return (
-        <div className="quests-container">
-            <h1>daily missiones !! come on buddy you can do it, time to improve yourself !</h1>
-            {quests.length === 0 ? (
-                <p>No quests found. Time to relax on the deck!</p>
-            ) : (
-                <>
+        return groupedQuests;
+    };
+
+    const renderQuests = (quests) => {
+        const groupedQuests = groupQuestsByTimeOfDay(quests);
+
+        return Object.entries(groupedQuests).map(([timeOfDay, quests]) => (
+            quests.length > 0 && (
+                <div key={timeOfDay}>
+                    <h2>{timeOfDay} Quests</h2>
                     <div className="quest-list">
                         {quests.map(playerQuest => (
                             <div key={playerQuest.id} className={`quest-item ${playerQuest.is_completed ? 'completed' : ''} ${playerQuest.failed ? 'failed' : ''}`}>
-                                <h2>{playerQuest.quest.name}</h2>
+                                <h3>{playerQuest.quest.name}</h3>
                                 <p>{playerQuest.quest.description}</p>
                                 <p><strong>Type:</strong> {playerQuest.quest.quest_type.name}</p>
                                 <p><strong>Reward:</strong> {playerQuest.quest.xp_reward} XP</p>
@@ -137,6 +146,27 @@ function Quests() {
                             </div>
                         ))}
                     </div>
+                </div>
+            )
+        ));
+    };
+
+    if (loading) {
+        return <div className="quests-container"><h1>Loading Quests...</h1></div>;
+    }
+
+    if (error) {
+        return <div className="quests-container"><h1>Error: {error}</h1></div>;
+    }
+
+    return (
+        <div className="quests-container">
+            <h1>daily missiones !! come on buddy you can do it, time to improve yourself !</h1>
+            {quests.length === 0 ? (
+                <p>No quests found. Time to relax on the deck!</p>
+            ) : (
+                <>
+                    {renderQuests(quests)}
                     <div className="back-link">
                         <Link to="/">Return to Ship (Profile)</Link>
                     </div>

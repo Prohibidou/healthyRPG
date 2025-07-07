@@ -22,6 +22,15 @@ class Quest(models.Model):
     description = models.TextField()
     xp_reward = models.PositiveIntegerField(default=10)
     quest_type = models.ForeignKey(QuestType, on_delete=models.SET_NULL, null=True, blank=True) # Added quest_type
+    time_of_day = models.CharField(
+        max_length=10,
+        choices=[
+            ('Morning', 'Morning'),
+            ('Afternoon', 'Afternoon'),
+            ('Night', 'Night'),
+        ],
+        default='Morning'
+    )
     
     # Las relaciones ahora apuntan a los modelos en legacy_core
     nutritional_archetype_quest = models.ForeignKey(
