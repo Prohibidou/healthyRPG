@@ -23,39 +23,33 @@ class PlayerProfileView(APIView):
     """
     Devuelve el perfil completo del jugador autenticado.
     """
-    permission_classes = [AllowAny]  # Allow any access for mock data
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        # Mock player data since we don't have a real user
-        mock_player_data = {
-            "level": 5,
-            "xp": 1250,
-            "nutritional_archetype": {"name": "Balanced"},
-            "physical_archetype": {"name": "Strength"},
-            "spiritual_path": {"name": "Mindfulness"}
-        }
-        return Response(mock_player_data)
+        player = get_object_or_404(Player, user=request.user)
+        serializer = PlayerSerializer(player)
+        return Response(serializer.data)
 
 class DailyQuestsView(APIView):
     """
     Obtiene o crea las misiones diarias para el jugador.
     """
-    permission_classes = [AllowAny] # Allow any access for mock data
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         user_timezone_str = request.headers.get('X-User-Timezone')
-
         now = timezone.now()
 
         if user_timezone_str:
             try:
+                import pytz
                 user_timezone = pytz.timezone(user_timezone_str)
                 now = now.astimezone(user_timezone)
             except pytz.UnknownTimeZoneError:
-                # Handle invalid timezone gracefully
-                pass
+                pass  # Handle invalid timezone gracefully
 
         current_hour = now.hour
+        today = now.date()
 
         if 5 <= current_hour < 12:
             time_of_day = 'Morning'
@@ -64,72 +58,53 @@ class DailyQuestsView(APIView):
         else:
             time_of_day = 'Night'
 
-        # Mock quest data
-        mock_quests = [
-            {
-                "id": 1,
-                "quest": {
-                    "name": "Morning Jog",
-                    "description": "Run for 15 minutes.",
-                    "quest_type": {"name": "Physical"},
-                    "xp_reward": 20,
-                    "time_of_day": "Morning",
-                },
-                "is_completed": False
-            },
-            {
-                "id": 2,
-                "quest": {
-                    "name": "Healthy Breakfast",
-                    "description": "Eat a balanced breakfast.",
-                    "quest_type": {"name": "Nutritional"},
-                    "xp_reward": 15,
-                    "time_of_day": "Morning",
-                },
-                "is_completed": False
-            },
-            {
-                "id": 3,
-                "quest": {
-                    "name": "Walk the Plank",
-                    "description": "Go for a 30-minute walk.",
-                    "quest_type": {"name": "Physical"},
-                    "xp_reward": 70,
-                    "time_of_day": "Afternoon",
-                },
-                "is_completed": False
-            },
-            {
-                "id": 4,
-                "quest": {
-                    "name": "Mindful Minute",
-                    "description": "Practice 5 minutes of meditation or deep breathing.",
-                    "quest_type": {"name": "Mindfulness"},
-                    "xp_reward": 40,
-                    "time_of_day": "Night",
-                },
-                "is_completed": False
-            },
-        ]
+        player = get_object_or_404(Player, user=request.user)
+        
+        player_quests = PlayerQuest.objects.filter(
+            player=player, 
+            date_assigned=today, 
+            quest__time_of_day=time_of_day
+        )
 
-        filtered_quests = [q for q in mock_quests if q['quest']['time_of_day'] == time_of_day]
+        if not player_quests.exists():
+            quests_to_assign = Quest.objects.filter(time_of_day=time_of_day)
+            
+            new_player_quests = []
+            for quest in quests_to_assign:
+                pq = PlayerQuest(player=player, quest=quest, date_assigned=today)
+                new_player_quests.append(pq)
+            
+            if new_player_quests:
+                PlayerQuest.objects.bulk_create(new_player_quests)
+                player_quests = PlayerQuest.objects.filter(
+                    player=player, 
+                    date_assigned=today, 
+                    quest__time_of_day=time_of_day
+                )
 
-        return Response(filtered_quests)
+        serializer = PlayerQuestSerializer(player_quests, many=True)
+        return Response(serializer.data)
 
 class CompleteQuestView(APIView):
     """
     Marca una misión diaria como completada.
     """
-    permission_classes = [AllowAny] # Allow any access for mock data
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, player_quest_id):
-        # In a real app, you'd update the database.
-        # For this mock, we just return a success message.
+        player = get_object_or_404(Player, user=request.user)
+        player_quest = get_object_or_404(PlayerQuest, id=player_quest_id, player=player)
+
+        if not player_quest.is_completed:
+            player_quest.is_completed = True
+            player_quest.save()
+            player.add_xp(player_quest.quest.xp_reward)
+
         return Response({
-            "message": f"Quest {player_quest_id} marked as complete!",
-            "xp_gained": 15, # Mock XP
-            "current_xp": 1265, # Mock total XP
-            "current_level": 5
+            "message": f"Quest {player_quest.quest.name} marked as complete!",
+            "xp_gained": player_quest.quest.xp_reward,
+            "current_xp": player.xp,
+            "current_level": player.level
         })
 
 class PlayerProfileTemplateView(LoginRequiredMixin, TemplateView):

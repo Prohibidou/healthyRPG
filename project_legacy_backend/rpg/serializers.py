@@ -34,7 +34,7 @@ class QuestSerializer(serializers.ModelSerializer):
     quest_type = QuestTypeSerializer(read_only=True) # Nested serializer for QuestType
     class Meta:
         model = Quest
-        fields = ('id', 'name', 'description', 'xp_reward', 'quest_type') # Include quest_type
+        fields = ('id', 'name', 'description', 'xp_reward', 'quest_type', 'time_of_day')
 
 class PlayerQuestSerializer(serializers.ModelSerializer):
     quest = QuestSerializer(read_only=True) # Nested serializer for Quest
