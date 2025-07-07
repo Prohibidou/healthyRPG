@@ -10,16 +10,22 @@ function Quests() {
     const [error, setError] = useState(null);
     const [activeQuestId, setActiveQuestId] = useState(null); // State to track the quest being attempted
 
+    // Function to get CSRF token from cookies
+    const getCsrfToken = () => {
+        const csrfCookie = document.cookie.split('; ').find(row => row.startsWith('csrftoken='));
+        return csrfCookie ? csrfCookie.split('=')[1] : null;
+    };
+
     const fetchQuests = async () => {
         try {
-            const token = localStorage.getItem('authToken');
-            if (!token) {
-                throw new Error('Authentication token not found. Please log in.');
+            const authToken = localStorage.getItem('authToken');
+            if (!authToken) {
+                throw new Error('Auth token not found. Please log in again.');
             }
 
             const response = await fetch(`http://localhost:8000/rpg/api/quests/daily/`, {
                 headers: {
-                    'Authorization': `Token ${token}`,
+                    'Authorization': `Token ${authToken}`,
                     'Content-Type': 'application/json'
                 }
             });
@@ -48,15 +54,15 @@ function Quests() {
     const handleCompleteQuest = async (playerQuestId) => {
         console.log('Attempting to complete quest with ID:', playerQuestId);
         try {
-            const token = localStorage.getItem('authToken');
-            if (!token) {
-                throw new Error('Authentication token not found. Please log in.');
+            const authToken = localStorage.getItem('authToken');
+            if (!authToken) {
+                throw new Error('Auth token not found. Please log in again.');
             }
 
             const response = await fetch(`http://localhost:8000/rpg/api/quests/complete/${playerQuestId}/`, {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Token ${token}`,
+                    'Authorization': `Token ${authToken}`,
                     'Content-Type': 'application/json'
                 }
             });
@@ -67,8 +73,17 @@ function Quests() {
 
             const data = await response.json();
             alert(data.message); // Show success message
+
+            // --- START of the change ---
+            // Update the local state to reflect the quest completion
+            setQuests(currentQuests =>
+                currentQuests.map(q =>
+                    q.id === playerQuestId ? { ...q, is_completed: true } : q
+                )
+            );
+            // --- END of the change ---
+
             setActiveQuestId(null); // Reset active quest
-            fetchQuests(); // Re-fetch quests to update status and player stats
 
         } catch (e) {
             setError(e.message);

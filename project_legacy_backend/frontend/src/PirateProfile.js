@@ -10,13 +10,25 @@ function PirateProfile() {
     const [error, setError] = useState(null);
 
     useEffect(() => {
+        // Function to get CSRF token from cookies
+        const getCsrfToken = () => {
+            const csrfCookie = document.cookie.split('; ').find(row => row.startsWith('csrftoken='));
+            return csrfCookie ? csrfCookie.split('=')[1] : null;
+        };
+
         // Function to fetch player data from the Django API
         const fetchPlayerData = async () => {
             try {
-                // We need to get the auth token first. For this example, we'll assume
-                // it's stored in localStorage after the user logs in.
+                const authToken = localStorage.getItem('authToken');
+                if (!authToken) {
+                    throw new Error('Auth token not found. Please log in again.');
+                }
+
                 const response = await fetch(`http://localhost:8000/rpg/api/profile/`, {
-                    credentials: 'include'
+                    headers: {
+                        'Authorization': `Token ${authToken}`,
+                        'Content-Type': 'application/json'
+                    }
                 });
 
                 if (!response.ok) {

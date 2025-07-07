@@ -5,12 +5,24 @@ const PlayerProfile = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
+        // Function to get CSRF token from cookies
+        const getCsrfToken = () => {
+            const csrfCookie = document.cookie.split('; ').find(row => row.startsWith('csrftoken='));
+            return csrfCookie ? csrfCookie.split('=')[1] : null;
+        };
+
         const fetchPlayerProfile = async () => {
             try {
-                const response = await fetch('/rpg/api/profile/', { 
+                const csrfToken = getCsrfToken();
+                if (!csrfToken) {
+                    throw new Error('CSRF token not found. Please ensure you are logged in.');
+                }
+
+                const response = await fetch('http://localhost:8000/rpg/api/profile/', { 
                     credentials: 'include',
                     headers: {
-                        'Accept': 'application/json'
+                        'X-CSRFToken': csrfToken,
+                        'Content-Type': 'application/json'
                     }
                 });
                 if (response.status === 403) {
