@@ -91,8 +91,13 @@ function Quests() {
         }
     };
 
-    const handleCancelQuest = () => {
-        setActiveQuestId(null); // Simply reset active quest
+    const handleCancelQuest = (playerQuestId) => {
+        setQuests(currentQuests =>
+            currentQuests.map(q =>
+                q.id === playerQuestId ? { ...q, failed: true } : q
+            )
+        );
+        setActiveQuestId(null); // Reset active quest
     };
 
     if (loading) {
@@ -109,31 +114,34 @@ function Quests() {
             {quests.length === 0 ? (
                 <p>No quests found. Time to relax on the deck!</p>
             ) : (
-                <div className="quest-list">
-                    {quests.map(playerQuest => (
-                        <div key={playerQuest.id} className={`quest-item ${playerQuest.is_completed ? 'completed' : ''}`}>
-                            <h2>{playerQuest.quest.name}</h2>
-                            <p>{playerQuest.quest.description}</p>
-                            <p><strong>Type:</strong> {playerQuest.quest.quest_type.name}</p>
-                            <p><strong>Reward:</strong> {playerQuest.quest.xp_reward} XP</p>
-                            {!playerQuest.is_completed && (
-                                activeQuestId === playerQuest.id ? (
-                                    <div className="quest-actions">
-                                        <button onClick={() => handleCompleteQuest(playerQuest.id)}>Done</button>
-                                        <button onClick={handleCancelQuest}>Couldn't do it</button>
-                                    </div>
-                                ) : (
-                                    <button onClick={() => handleQuestClick(playerQuest.id)}>Begin Quest</button>
-                                )
-                            )}
-                            {playerQuest.is_completed && <p className="completed-message">Completed!</p>}
-                        </div>
-                    ))}
-                </div>
+                <>
+                    <div className="quest-list">
+                        {quests.map(playerQuest => (
+                            <div key={playerQuest.id} className={`quest-item ${playerQuest.is_completed ? 'completed' : ''} ${playerQuest.failed ? 'failed' : ''}`}>
+                                <h2>{playerQuest.quest.name}</h2>
+                                <p>{playerQuest.quest.description}</p>
+                                <p><strong>Type:</strong> {playerQuest.quest.quest_type.name}</p>
+                                <p><strong>Reward:</strong> {playerQuest.quest.xp_reward} XP</p>
+                                {!playerQuest.is_completed && !playerQuest.failed && (
+                                    activeQuestId === playerQuest.id ? (
+                                        <div className="quest-actions">
+                                            <button onClick={() => handleCompleteQuest(playerQuest.id)}>Done</button>
+                                            <button onClick={() => handleCancelQuest(playerQuest.id)}>Couldn't do it</button>
+                                        </div>
+                                    ) : (
+                                        <button onClick={() => handleQuestClick(playerQuest.id)}>Begin Quest</button>
+                                    )
+                                )}
+                                {playerQuest.is_completed && <p className="completed-message">Completed!</p>}
+                                {playerQuest.failed && <p className="failed-message">Failed!</p>}
+                            </div>
+                        ))}
+                    </div>
+                    <div className="back-link">
+                        <Link to="/">Return to Ship (Profile)</Link>
+                    </div>
+                </>
             )}
-            <div className="back-link">
-                <Link to="/">Return to Ship (Profile)</Link>
-            </div>
         </div>
     );
 }
