@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './PirateProfile.css';
 
+
+
 function PirateProfile() {
     const [player, setPlayer] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -13,18 +15,8 @@ function PirateProfile() {
             try {
                 // We need to get the auth token first. For this example, we'll assume
                 // it's stored in localStorage after the user logs in.
-                const token = localStorage.getItem('authToken');
-
-                // If there's no token, we can't authenticate.
-                if (!token) {
-                    throw new Error('Authentication token not found. Please log in.');
-                }
-
-                const response = await fetch('/rpg/api/profile/', {
-                    headers: {
-                        'Authorization': `Token ${token}`,
-                        'Content-Type': 'application/json'
-                    }
+                const response = await fetch(`http://localhost:8000/rpg/api/profile/`, {
+                    credentials: 'include'
                 });
 
                 if (!response.ok) {

@@ -7,7 +7,7 @@ const PlayerProfile = () => {
     useEffect(() => {
         const fetchPlayerProfile = async () => {
             try {
-                const response = await fetch('http://localhost:8000/rpg/api/profile/', { 
+                const response = await fetch('/rpg/api/profile/', { 
                     credentials: 'include',
                     headers: {
                         'Accept': 'application/json'

@@ -7,7 +7,7 @@ django.setup()
 from django.contrib.auth.models import User
 from legacy_core.models import Player
 
-username = "maxi"
+username = "juan"
 
 try:
     user = User.objects.get(username=username)
