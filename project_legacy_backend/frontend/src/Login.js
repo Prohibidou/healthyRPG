@@ -28,6 +28,7 @@ function Login() {
 
             const data = await response.json();
             localStorage.setItem('authToken', data.token);
+            console.log('Token stored:', data.token); // <-- ADD THIS LINE
             navigate('/'); // Redirect to the profile page after successful login
         } catch (e) {
             setError(e.message);

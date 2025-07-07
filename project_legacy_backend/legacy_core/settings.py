@@ -116,6 +116,12 @@ CSRF_TRUSTED_ORIGINS = [
 
 CORS_ALLOW_CREDENTIALS = True
 
+CORS_ALLOW_HEADERS = [
+    'Content-Type',
+    'Authorization',
+    'x-csrftoken',
+]
+
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
@@ -147,12 +153,17 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # SESSION_COOKIE_SAMESITE = 'None'
 # SESSION_COOKIE_SECURE = False
 
+SESSION_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SECURE = False
+
+CSRF_COOKIE_SAMESITE = 'None'
+CSRF_COOKIE_SECURE = False
+
 LOGIN_URL = '/admin/login/'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
-        'rest_framework.authentication.SessionAuthentication', # Keep SessionAuthentication for browsable API
+        'rest_framework.authentication.SessionAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
