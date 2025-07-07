@@ -120,6 +120,7 @@ CORS_ALLOW_HEADERS = [
     'Content-Type',
     'Authorization',
     'x-csrftoken',
+    'X-User-Timezone',
 ]
 
 # Internationalization

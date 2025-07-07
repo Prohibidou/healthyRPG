@@ -9,6 +9,7 @@ from django.utils import timezone
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
+import pytz
 
 from legacy_core.models import Player
 from .models import Quest, PlayerQuest
@@ -42,7 +43,18 @@ class DailyQuestsView(APIView):
     permission_classes = [AllowAny] # Allow any access for mock data
 
     def get(self, request):
+        user_timezone_str = request.headers.get('X-User-Timezone')
+
         now = timezone.now()
+
+        if user_timezone_str:
+            try:
+                user_timezone = pytz.timezone(user_timezone_str)
+                now = now.astimezone(user_timezone)
+            except pytz.UnknownTimeZoneError:
+                # Handle invalid timezone gracefully
+                pass
+
         current_hour = now.hour
 
         if 5 <= current_hour < 12:
@@ -135,7 +147,19 @@ class DailyQuestsTemplateView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         player = get_object_or_404(Player, user=self.request.user)
         today = timezone.now().date()
+        
+        user_timezone_str = self.request.headers.get('X-User-Timezone')
+
         now = timezone.now()
+
+        if user_timezone_str:
+            try:
+                user_timezone = pytz.timezone(user_timezone_str)
+                now = now.astimezone(user_timezone)
+            except pytz.UnknownTimeZoneError:
+                # Handle invalid timezone gracefully
+                pass
+
         current_hour = now.hour
 
         if 5 <= current_hour < 12:

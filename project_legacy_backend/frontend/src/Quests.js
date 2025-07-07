@@ -23,10 +23,12 @@ function Quests() {
                 throw new Error('Auth token not found. Please log in again.');
             }
 
+            const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
             const response = await fetch(`http://localhost:8000/rpg/api/quests/daily/`, {
                 headers: {
                     'Authorization': `Token ${authToken}`,
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'X-User-Timezone': userTimezone,
                 }
             });
 
