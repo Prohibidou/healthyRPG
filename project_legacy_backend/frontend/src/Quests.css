@@ -119,3 +119,13 @@
     background-color: #FFD700;
     color: #4E342E;
 }
+
+.quest-item.failed {
+    background-color: #ffdddd; /* Light red background */
+    border-color: #ff8888; /* Darker red border */
+}
+
+.failed-message {
+    color: #cc0000; /* Dark red text */
+    font-weight: bold;
+}
