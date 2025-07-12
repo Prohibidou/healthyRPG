@@ -21,116 +21,138 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 
 class PlayerProfileView(APIView):
     """
-    Devuelve el perfil completo del jugador autenticado.
+    Returns the complete profile of the authenticated player.
     """
-    permission_classes = [AllowAny]  # Allow any access for mock data
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        # Mock player data since we don't have a real user
-        mock_player_data = {
-            "level": 5,
-            "xp": 1250,
-            "nutritional_archetype": {"name": "Balanced"},
-            "physical_archetype": {"name": "Strength"},
-            "spiritual_path": {"name": "Mindfulness"}
-        }
-        return Response(mock_player_data)
+        try:
+            player = get_object_or_404(Player, user=request.user)
+            serializer = PlayerSerializer(player)
+            return Response(serializer.data)
+        except Exception as e:
+            traceback.print_exc()
+            return Response(
+                {"error": "An unexpected error occurred while fetching the player profile."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 class DailyQuestsView(APIView):
     """
-    Obtiene o crea las misiones diarias para el jugador.
+    Gets or creates the daily quests for the player.
     """
-    permission_classes = [AllowAny] # Allow any access for mock data
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        user_timezone_str = request.headers.get('X-User-Timezone')
+        try:
+            player = get_object_or_404(Player, user=request.user)
+            today = timezone.now().date()
 
-        now = timezone.now()
+            user_timezone_str = request.headers.get('X-User-Timezone')
+            now = timezone.now()
 
-        if user_timezone_str:
-            try:
-                user_timezone = pytz.timezone(user_timezone_str)
-                now = now.astimezone(user_timezone)
-            except pytz.UnknownTimeZoneError:
-                # Handle invalid timezone gracefully
-                pass
+            if user_timezone_str:
+                try:
+                    user_timezone = pytz.timezone(user_timezone_str)
+                    now = now.astimezone(user_timezone)
+                except pytz.UnknownTimeZoneError:
+                    pass
 
-        current_hour = now.hour
+            current_hour = now.hour
+            if 5 <= current_hour < 12:
+                time_of_day = 'Morning'
+            elif 12 <= current_hour < 17:
+                time_of_day = 'Afternoon'
+            else:
+                time_of_day = 'Night'
 
-        if 5 <= current_hour < 12:
-            time_of_day = 'Morning'
-        elif 12 <= current_hour < 17:
-            time_of_day = 'Afternoon'
-        else:
-            time_of_day = 'Night'
+            # Filter quests for the determined time of day
+            player_quests = PlayerQuest.objects.filter(
+                player=player, 
+                date_assigned=today, 
+                quest__time_of_day=time_of_day
+            )
 
-        # Mock quest data
-        mock_quests = [
-            {
-                "id": 1,
-                "quest": {
-                    "name": "Morning Jog",
-                    "description": "Run for 15 minutes.",
-                    "quest_type": {"name": "Physical"},
-                    "xp_reward": 20,
-                    "time_of_day": "Morning",
-                },
-                "is_completed": False
-            },
-            {
-                "id": 2,
-                "quest": {
-                    "name": "Healthy Breakfast",
-                    "description": "Eat a balanced breakfast.",
-                    "quest_type": {"name": "Nutritional"},
-                    "xp_reward": 15,
-                    "time_of_day": "Morning",
-                },
-                "is_completed": False
-            },
-            {
-                "id": 3,
-                "quest": {
-                    "name": "Walk the Plank",
-                    "description": "Go for a 30-minute walk.",
-                    "quest_type": {"name": "Physical"},
-                    "xp_reward": 70,
-                    "time_of_day": "Afternoon",
-                },
-                "is_completed": False
-            },
-            {
-                "id": 4,
-                "quest": {
-                    "name": "Mindful Minute",
-                    "description": "Practice 5 minutes of meditation or deep breathing.",
-                    "quest_type": {"name": "Mindfulness"},
-                    "xp_reward": 40,
-                    "time_of_day": "Night",
-                },
-                "is_completed": False
-            },
-        ]
+            # If no quests exist for this time of day, create them
+            if not player_quests.exists():
+                # Fetch quests based on player archetypes and time of day
+                nutritional_quests = Quest.objects.filter(nutritional_archetype_quest=player.nutritional_archetype, time_of_day=time_of_day)
+                physical_quests = Quest.objects.filter(physical_archetype_quest=player.physical_archetype, time_of_day=time_of_day)
+                spiritual_quest = Quest.objects.filter(is_spiritual_quest=True, time_of_day=time_of_day)
+                
+                all_quests = list(nutritional_quests) + list(physical_quests) + list(spiritual_quest)
+                
+                new_player_quests = []
+                for quest in all_quests:
+                    pq = PlayerQuest(player=player, quest=quest, date_assigned=today)
+                    new_player_quests.append(pq)
+                
+                if new_player_quests:
+                    PlayerQuest.objects.bulk_create(new_player_quests)
+                    # Re-fetch the quests after creation
+                    player_quests = PlayerQuest.objects.filter(
+                        player=player, 
+                        date_assigned=today, 
+                        quest__time_of_day=time_of_day
+                    )
 
-        filtered_quests = [q for q in mock_quests if q['quest']['time_of_day'] == time_of_day]
+            serializer = PlayerQuestSerializer(player_quests, many=True)
+            return Response(serializer.data)
 
-        return Response(filtered_quests)
+        except Exception as e:
+            traceback.print_exc()
+            return Response(
+                {"error": "An unexpected error occurred while fetching daily quests."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 class CompleteQuestView(APIView):
     """
-    Marca una misión diaria como completada.
+    Marks a daily quest as completed.
     """
-    permission_classes = [AllowAny] # Allow any access for mock data
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, player_quest_id):
-        # In a real app, you'd update the database.
-        # For this mock, we just return a success message.
-        return Response({
-            "message": f"Quest {player_quest_id} marked as complete!",
-            "xp_gained": 15, # Mock XP
-            "current_xp": 1265, # Mock total XP
-            "current_level": 5
-        })
+        try:
+            player = get_object_or_404(Player, user=request.user)
+            player_quest = get_object_or_404(PlayerQuest, id=player_quest_id, player=player)
+
+            if player_quest.is_completed:
+                return Response(
+                    {"message": "Quest already completed."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # Mark the quest as completed
+            player_quest.is_completed = True
+            player_quest.save()
+
+            # Add XP to the player
+            xp_gained = player_quest.quest.xp_reward
+            player.add_xp(xp_gained)
+
+            return Response({
+                "message": f"Quest '{player_quest.quest.name}' marked as complete!",
+                "xp_gained": xp_gained,
+                "current_xp": player.xp,
+                "current_level": player.level
+            }, status=status.HTTP_200_OK)
+
+        except PlayerQuest.DoesNotExist:
+            return Response(
+                {"error": "Quest not found or does not belong to the user."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        except Exception as e:
+            # Log the exception for debugging
+            traceback.print_exc()
+            return Response(
+                {"error": "An unexpected error occurred."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 class PlayerProfileTemplateView(LoginRequiredMixin, TemplateView):
     template_name = 'rpg/profile.html'
