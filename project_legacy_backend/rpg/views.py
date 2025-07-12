@@ -9,6 +9,7 @@ from django.utils import timezone
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
+import pytz
 
 from legacy_core.models import Player
 from .models import Quest, PlayerQuest
@@ -42,6 +43,27 @@ class DailyQuestsView(APIView):
     permission_classes = [AllowAny] # Allow any access for mock data
 
     def get(self, request):
+        user_timezone_str = request.headers.get('X-User-Timezone')
+
+        now = timezone.now()
+
+        if user_timezone_str:
+            try:
+                user_timezone = pytz.timezone(user_timezone_str)
+                now = now.astimezone(user_timezone)
+            except pytz.UnknownTimeZoneError:
+                # Handle invalid timezone gracefully
+                pass
+
+        current_hour = now.hour
+
+        if 5 <= current_hour < 12:
+            time_of_day = 'Morning'
+        elif 12 <= current_hour < 17:
+            time_of_day = 'Afternoon'
+        else:
+            time_of_day = 'Night'
+
         # Mock quest data
         mock_quests = [
             {
@@ -50,7 +72,8 @@ class DailyQuestsView(APIView):
                     "name": "Morning Jog",
                     "description": "Run for 15 minutes.",
                     "quest_type": {"name": "Physical"},
-                    "xp_reward": 20
+                    "xp_reward": 20,
+                    "time_of_day": "Morning",
                 },
                 "is_completed": False
             },
@@ -60,12 +83,38 @@ class DailyQuestsView(APIView):
                     "name": "Healthy Breakfast",
                     "description": "Eat a balanced breakfast.",
                     "quest_type": {"name": "Nutritional"},
-                    "xp_reward": 15
+                    "xp_reward": 15,
+                    "time_of_day": "Morning",
                 },
                 "is_completed": False
-            }
+            },
+            {
+                "id": 3,
+                "quest": {
+                    "name": "Walk the Plank",
+                    "description": "Go for a 30-minute walk.",
+                    "quest_type": {"name": "Physical"},
+                    "xp_reward": 70,
+                    "time_of_day": "Afternoon",
+                },
+                "is_completed": False
+            },
+            {
+                "id": 4,
+                "quest": {
+                    "name": "Mindful Minute",
+                    "description": "Practice 5 minutes of meditation or deep breathing.",
+                    "quest_type": {"name": "Mindfulness"},
+                    "xp_reward": 40,
+                    "time_of_day": "Night",
+                },
+                "is_completed": False
+            },
         ]
-        return Response(mock_quests)
+
+        filtered_quests = [q for q in mock_quests if q['quest']['time_of_day'] == time_of_day]
+
+        return Response(filtered_quests)
 
 class CompleteQuestView(APIView):
     """
@@ -98,18 +147,40 @@ class DailyQuestsTemplateView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         player = get_object_or_404(Player, user=self.request.user)
         today = timezone.now().date()
-        player_quests = PlayerQuest.objects.filter(player=player, date_assigned=today)
+        
+        user_timezone_str = self.request.headers.get('X-User-Timezone')
+
+        now = timezone.now()
+
+        if user_timezone_str:
+            try:
+                user_timezone = pytz.timezone(user_timezone_str)
+                now = now.astimezone(user_timezone)
+            except pytz.UnknownTimeZoneError:
+                # Handle invalid timezone gracefully
+                pass
+
+        current_hour = now.hour
+
+        if 5 <= current_hour < 12:
+            time_of_day = 'Morning'
+        elif 12 <= current_hour < 17:
+            time_of_day = 'Afternoon'
+        else:
+            time_of_day = 'Night'
+
+        player_quests = PlayerQuest.objects.filter(player=player, date_assigned=today, quest__time_of_day=time_of_day)
         if not player_quests.exists():
-            nutritional_quests = Quest.objects.filter(nutritional_archetype_quest=player.nutritional_archetype)
-            physical_quests = Quest.objects.filter(physical_archetype_quest=player.physical_archetype)
-            spiritual_quest = Quest.objects.filter(is_spiritual_quest=True)
+            nutritional_quests = Quest.objects.filter(nutritional_archetype_quest=player.nutritional_archetype, time_of_day=time_of_day)
+            physical_quests = Quest.objects.filter(physical_archetype_quest=player.physical_archetype, time_of_day=time_of_day)
+            spiritual_quest = Quest.objects.filter(is_spiritual_quest=True, time_of_day=time_of_day)
             all_quests = list(nutritional_quests) + list(physical_quests) + list(spiritual_quest)
             new_player_quests = []
             for quest in all_quests:
                 pq = PlayerQuest(player=player, quest=quest, date_assigned=today)
                 new_player_quests.append(pq)
             PlayerQuest.objects.bulk_create(new_player_quests)
-            player_quests = PlayerQuest.objects.filter(player=player, date_assigned=today)
+            player_quests = PlayerQuest.objects.filter(player=player, date_assigned=today, quest__time_of_day=time_of_day)
         context['player_quests'] = player_quests
         return context
 

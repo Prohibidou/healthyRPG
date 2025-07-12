@@ -17,31 +17,36 @@ class Command(BaseCommand):
                 'name': 'Morning Stretch',
                 'description': 'Perform 15 minutes of stretching exercises.',
                 'xp_reward': 50,
-                'quest_type': exercise_type
+                'quest_type': exercise_type,
+                'time_of_day': 'Morning',
             },
             {
                 'name': 'Hydration Hero',
                 'description': 'Drink 8 glasses of water today.',
                 'xp_reward': 30,
-                'quest_type': nutrition_type
+                'quest_type': nutrition_type,
+                'time_of_day': 'Afternoon',
             },
             {
                 'name': 'Mindful Minute',
                 'description': 'Practice 5 minutes of meditation or deep breathing.',
                 'xp_reward': 40,
-                'quest_type': mind_type
+                'quest_type': mind_type,
+                'time_of_day': 'Night',
             },
             {
                 'name': 'Walk the Plank',
                 'description': 'Go for a 30-minute walk.',
                 'xp_reward': 70,
-                'quest_type': exercise_type
+                'quest_type': exercise_type,
+                'time_of_day': 'Afternoon',
             },
             {
                 'name': 'Veggie Victory',
                 'description': 'Eat at least 3 servings of vegetables.',
                 'xp_reward': 60,
-                'quest_type': nutrition_type
+                'quest_type': nutrition_type,
+                'time_of_day': 'Morning',
             },
         ]
 
