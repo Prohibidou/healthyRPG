@@ -6,11 +6,10 @@ from django.conf.urls.static import static
 from django.views.static import serve
 from rest_framework.authtoken.views import obtain_auth_token
 
-from legacy_core.views import google_login_callback
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('accounts/google/login/callback/', google_login_callback, name='google_login_callback'),
     path('accounts/', include('allauth.urls')),
     path('rpg/', include('rpg.urls', namespace='rpg')),
     path('api-token-auth/', obtain_auth_token, name='api_token_auth'),

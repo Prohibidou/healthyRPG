@@ -51,14 +51,23 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-        'corsheaders.middleware.CorsMiddleware',
+    # Handles Cross-Origin Resource Sharing (CORS) to allow requests from the frontend.
+    'corsheaders.middleware.CorsMiddleware',
+    # Adds security headers to responses.
     'django.middleware.security.SecurityMiddleware',
+    # Manages user sessions.
     'django.contrib.sessions.middleware.SessionMiddleware',
+    # Handles common URL manipulations and redirects.
     'django.middleware.common.CommonMiddleware',
+    # Protects against Cross-Site Request Forgery (CSRF) attacks.
     'django.middleware.csrf.CsrfViewMiddleware',
+    # Associates users with requests using sessions.
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    # Enables the message framework.
     'django.contrib.messages.middleware.MessageMiddleware',
+    # Protects against clickjacking attacks.
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # `allauth` specific middleware for account management.
     'allauth.account.middleware.AccountMiddleware',
 ]
 
@@ -169,7 +178,7 @@ AUTHENTICATION_BACKENDS = (
 )
 
 SITE_ID = 1
-LOGIN_REDIRECT_URL = '/accounts/google/login/callback/'
+LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
 SOCIALACCOUNT_PROVIDERS = {

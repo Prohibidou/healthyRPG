@@ -10,8 +10,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-class LoginView(TemplateView):
-    template_name = 'rpg/login.html'
+
 
 from legacy_core.models import Player
 from .models import Quest, PlayerQuest

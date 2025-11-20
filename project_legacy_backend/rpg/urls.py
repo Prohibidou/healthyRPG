@@ -7,7 +7,6 @@ from .views import (
     PlayerProfileTemplateView,
     DailyQuestsTemplateView,
     CompleteQuestTemplateView,
-    LoginView
 )
 
 app_name = 'rpg'
@@ -22,5 +21,4 @@ urlpatterns = [
     path('profile/', PlayerProfileTemplateView.as_view(), name='profile'),
     path('quests/', DailyQuestsTemplateView.as_view(), name='quests'),
     path('quests/complete/<int:player_quest_id>/', CompleteQuestTemplateView.as_view(), name='complete-quest-view'),
-    path('login/', LoginView.as_view(), name='login'),
 ]
