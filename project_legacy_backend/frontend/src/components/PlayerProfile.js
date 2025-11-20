@@ -13,12 +13,13 @@ const PlayerProfile = () => {
 
         const fetchPlayerProfile = async () => {
             try {
+<<<<<<< HEAD
                 const csrfToken = getCsrfToken();
                 if (!csrfToken) {
                     throw new Error('CSRF token not found. Please ensure you are logged in.');
                 }
 
-                const response = await fetch('http://localhost:8000/rpg/api/profile/', { 
+                const response = await fetch('http://localhost:8000/rpg/api/profile/', {
                     credentials: 'include',
                     headers: {
                         'X-CSRFToken': csrfToken,

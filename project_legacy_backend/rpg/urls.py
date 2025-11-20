@@ -6,7 +6,7 @@ from .views import (
     CompleteQuestView,
     PlayerProfileTemplateView,
     DailyQuestsTemplateView,
-    CompleteQuestTemplateView
+    CompleteQuestTemplateView,
 )
 
 app_name = 'rpg'

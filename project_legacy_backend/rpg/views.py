@@ -3,12 +3,14 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.authentication import SessionAuthentication
+from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
+
+
 
 from legacy_core.models import Player
 from .models import Quest, PlayerQuest
@@ -16,24 +18,34 @@ from .serializers import PlayerSerializer, PlayerQuestSerializer
 
 from rest_framework.authentication import TokenAuthentication
 
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated
 
 class PlayerProfileView(APIView):
     """
     Devuelve el perfil completo del jugador autenticado.
     """
-    permission_classes = [AllowAny]  # Allow any access for mock data
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        # Mock player data since we don't have a real user
-        mock_player_data = {
-            "level": 5,
-            "xp": 1250,
-            "nutritional_archetype": {"name": "Balanced"},
-            "physical_archetype": {"name": "Strength"},
-            "spiritual_path": {"name": "Mindfulness"}
-        }
-        return Response(mock_player_data)
+        try:
+            player, created = Player.objects.get_or_create(user=request.user)
+            if created:
+                print(f"Created new player profile for user: {request.user.username}")
+            serializer = PlayerSerializer(player)
+            return Response(serializer.data)
+        except Player.DoesNotExist:
+            return Response({
+                "error": "Player profile not found for this user.",
+                "user_searched": request.user.username
+            }, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            # Print the full traceback to the console
+            traceback.print_exc()
+            return Response({
+                "error": "An unexpected error occurred. Check the server console for details.",
+                "details": str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class DailyQuestsView(APIView):
     """

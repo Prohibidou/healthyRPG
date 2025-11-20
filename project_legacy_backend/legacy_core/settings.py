@@ -37,23 +37,38 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     # Mis apps
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
     'legacy_core',
     'rpg',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
 ]
 
 MIDDLEWARE = [
-        'corsheaders.middleware.CorsMiddleware',
+    # Handles Cross-Origin Resource Sharing (CORS) to allow requests from the frontend.
+    'corsheaders.middleware.CorsMiddleware',
+    # Adds security headers to responses.
     'django.middleware.security.SecurityMiddleware',
+    # Manages user sessions.
     'django.contrib.sessions.middleware.SessionMiddleware',
+    # Handles common URL manipulations and redirects.
     'django.middleware.common.CommonMiddleware',
+    # Protects against Cross-Site Request Forgery (CSRF) attacks.
     'django.middleware.csrf.CsrfViewMiddleware',
+    # Associates users with requests using sessions.
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    # Enables the message framework.
     'django.contrib.messages.middleware.MessageMiddleware',
+    # Protects against clickjacking attacks.
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # `allauth` specific middleware for account management.
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'legacy_core.urls'
@@ -140,7 +155,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 STATICFILES_DIRS = [
-    BASE_DIR / 'frontend' / 'build',
+    BASE_DIR / 'frontend' / 'build' / 'static',
 ]
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'
@@ -150,8 +165,20 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ]
+}
+
 # SESSION_COOKIE_SAMESITE = 'None'
 # SESSION_COOKIE_SECURE = False
+
+<<<<<<< HEAD
 
 SESSION_COOKIE_SAMESITE = 'None'
 SESSION_COOKIE_SECURE = False
@@ -161,11 +188,23 @@ CSRF_COOKIE_SECURE = False
 
 LOGIN_URL = '/admin/login/'
 
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
-    ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-    ],
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+)
+
+SITE_ID = 1
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
 }
