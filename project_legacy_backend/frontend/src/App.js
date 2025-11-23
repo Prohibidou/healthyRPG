@@ -4,48 +4,44 @@ import PirateProfile from './PirateProfile';
 import Login from './components/Login';
 import AuthCallback from './components/AuthCallback';
 import Quests from './Quests';
+import { AuthProvider } from './context/AuthContext';
+import PrivateRoute from './components/PrivateRoute';
+import Navbar from './components/Navbar';
 import './App.css';
 
 function App() {
   return (
-    <Router>
-      <div className="App">
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/auth/callback" element={<AuthCallback />} />
-          <Route
-            path="/"
-            element={
-              localStorage.getItem('authToken') ? (
-                <Navigate to="/profile" replace />
-              ) : (
-                <Navigate to="/login" replace />
-              )
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              localStorage.getItem('authToken') ? (
-                <PirateProfile />
-              ) : (
-                <Navigate to="/login" replace />
-              )
-            }
-          />
-          <Route
-            path="/quests"
-            element={
-              localStorage.getItem('authToken') ? (
-                <Quests />
-              ) : (
-                <Navigate to="/login" replace />
-              )
-            }
-          />
-        </Routes>
-      </div>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <div className="App">
+          <Navbar />
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/auth/callback" element={<AuthCallback />} />
+            <Route
+              path="/"
+              element={<Navigate to="/profile" replace />}
+            />
+            <Route
+              path="/profile"
+              element={
+                <PrivateRoute>
+                  <PirateProfile />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/quests"
+              element={
+                <PrivateRoute>
+                  <Quests />
+                </PrivateRoute>
+              }
+            />
+          </Routes>
+        </div>
+      </Router>
+    </AuthProvider>
   );
 }
 
