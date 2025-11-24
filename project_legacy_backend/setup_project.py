@@ -3,6 +3,16 @@ import sys
 import django
 from django.core.management import call_command
 
+def safe_input(prompt, default=None):
+    try:
+        return input(prompt)
+    except (EOFError, KeyboardInterrupt):
+        if default is not None:
+            print(f"\n   ⚠ Input skipped, using default: {default}")
+            return default
+        print("\n   ⚠ Input skipped.")
+        return ""
+
 def setup():
     print("=== HealthyRPG Project Setup ===\n")
 
@@ -49,15 +59,15 @@ def setup():
         if app:
             print(f"   ✓ Found existing Google App: {app.name}")
             print(f"     Client ID: {app.client_id[:15]}...")
-            update = input("   Do you want to update credentials? (y/n): ").lower().strip()
+            update = safe_input("   Do you want to update credentials? (y/n): ", default='n').lower().strip()
         else:
             print("   ⚠ No Google App found.")
             update = 'y'
 
         if update == 'y':
             print("   Please enter your Google Cloud Credentials:")
-            client_id = input("   Client ID: ").strip()
-            client_secret = input("   Client Secret: ").strip()
+            client_id = safe_input("   Client ID: ").strip()
+            client_secret = safe_input("   Client Secret: ").strip()
 
             if client_id and client_secret:
                 if app:
@@ -89,7 +99,7 @@ def setup():
         from django.contrib.auth.models import User
         if not User.objects.filter(is_superuser=True).exists():
             print("   No superuser found.")
-            create = input("   Do you want to create a superuser? (y/n): ").lower().strip()
+            create = safe_input("   Do you want to create a superuser? (y/n): ", default='n').lower().strip()
             if create == 'y':
                 call_command('createsuperuser')
         else:
